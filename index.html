@@ -577,18 +577,17 @@ body.display-mode .timer {
 </div>
 
 <audio id="timerSound" preload="auto">
-    <source src="https://gurten7.github.io/timer-sound.mp3" type="audio/mp3">
-    Je browser ondersteunt het afspelen van audio niet.
+  <source src="timer-sound.mp3" type="audio/mp3">
+  Je browser ondersteunt het afspelen van audio niet.
 </audio>
 <audio id="timerEndSound" preload="auto">
-    <source src="https://gurten7.github.io/timer-sound-end.mp3" type="audio/mp3">
-    Je browser ondersteunt het afspelen van audio niet.
+  <source src="timer-sound-end.mp3" type="audio/mp3">
+  Je browser ondersteunt het afspelen van audio niet.
 </audio>
 <audio id="finaleSound" preload="auto">
-    <source src="https://gurten7.github.io/Sound-finale.mp3" type="audio/mp3">
-    Je browser ondersteunt het afspelen van audio niet.
+  <source src="Sound-finale.mp3" type="audio/mp3">
+  Je browser ondersteunt het afspelen van audio niet.
 </audio>
-
 
     <div class="controls">
         <div class="row">
@@ -609,8 +608,11 @@ body.display-mode .timer {
                 <option value="2">Timer 3</option>
                 <option value="3">Timer 4</option>
             </select>
-
-          <!-- 🔤 Teamnamen handmatig instellen -->
+            <button id="toggleBtn" class="hide-if-needed">Zichtbaar ja/nee</button>
+            <input type="number" id="timeInput" placeholder="Voer seconden in" class="hide-if-needed">
+            <button id="setTimeBtn" class="hide-if-needed">Doorvoeren</button>
+        </div>
+         <!-- 🔤 Teamnamen handmatig instellen -->
 <div class="controls hide-if-needed" id="teamnaam-formulier">
   <div class="row">
     <input type="text" id="teamInput0" placeholder="Team 1 naam" class="team-input" />
@@ -620,10 +622,6 @@ body.display-mode .timer {
   </div>
   <button id="updateTeamNamesBtn">Teamnamen doorvoeren</button>
 </div>
-            <button id="toggleBtn" class="hide-if-needed">Zichtbaar ja/nee</button>
-            <input type="number" id="timeInput" placeholder="Voer seconden in" class="hide-if-needed">
-            <button id="setTimeBtn" class="hide-if-needed">Doorvoeren</button>
-        </div>
     </div>
 </body>
 </html>
