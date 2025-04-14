@@ -1,18 +1,18 @@
 {
   "name": "Slimste Kameraad Display",
   "short_name": "Display",
-  "start_url": "/slimste/?view=display",
+  "start_url": "/de-slimste-kameraad/?view=display",
   "display": "standalone",
   "theme_color": "#650409",
   "background_color": "#650409",
   "icons": [
     {
-      "src": "/slimste/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/slimste/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
