@@ -157,29 +157,34 @@
       firebase.database().ref("selectedTimer").set(index);
     }
 
-    function startTimer() {
-      if (intervals[geselecteerdeTimer]) return;
-      intervals[geselecteerdeTimer] = setInterval(() => {
-        if (timers[geselecteerdeTimer] > 0) {
-          timers[geselecteerdeTimer]--;
-          updateWeergave();
-          updateDatabase();
-        } else if (timers[geselecteerdeTimer] === 0) {
-          clearInterval(intervals[geselecteerdeTimer]);
-          intervals[geselecteerdeTimer] = null;
-          timerSound.pause();
-          timerSound.currentTime = 0;
-          if (!finaleGeluidGespeeld[geselecteerdeTimer]) {
-            finaleSound.play().catch(console.log);
-            finaleGeluidGespeeld[geselecteerdeTimer] = true;
-          }
-          timerEndSound.play().catch(console.log);
-        }
-      }, 1000);
-      timerSound.play().catch(console.log);
-      document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "none");
-      finaleGeluidGespeeld[geselecteerdeTimer] = false;
+  function startTimer() {
+  // Eerst: check of er überhaupt al een timer loopt
+  const isAnyTimerRunning = intervals.some(interval => interval !== null);
+  if (isAnyTimerRunning) return; // ✅ Voorkom dat startTimer() dubbel start
+
+  // Start geselecteerde timer
+  intervals[geselecteerdeTimer] = setInterval(() => {
+    if (timers[geselecteerdeTimer] > 0) {
+      timers[geselecteerdeTimer]--;
+      updateWeergave();
+      updateDatabase();
+    } else if (timers[geselecteerdeTimer] === 0) {
+      clearInterval(intervals[geselecteerdeTimer]);
+      intervals[geselecteerdeTimer] = null;
+      timerSound.pause();
+      timerSound.currentTime = 0;
+      if (!finaleGeluidGespeeld[geselecteerdeTimer]) {
+        finaleSound.play().catch(console.log);
+        finaleGeluidGespeeld[geselecteerdeTimer] = true;
+      }
+      timerEndSound.play().catch(console.log);
     }
+  }, 1000);
+
+  timerSound.play().catch(console.log);
+  document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "none");
+  finaleGeluidGespeeld[geselecteerdeTimer] = false;
+}
 
    function stopTimer() {
   clearInterval(intervals[geselecteerdeTimer]);
