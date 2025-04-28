@@ -263,16 +263,24 @@ function resetTimer() {
     }
 
     function stelAangepasteTijdIn() {
-      const invoerSeconden = parseInt(document.getElementById("timeInput").value);
-      if (!isNaN(invoerSeconden) && invoerSeconden >= 0) {
-        timers[geselecteerdeTimer] = invoerSeconden;
-        updateWeergave();
-        updateDatabase();
-      } else {
-        alert("Voer een geldig aantal seconden in (minimaal 0)");
-      }
+  const invoerSeconden = parseInt(document.getElementById("timeInput").value);
+  if (!isNaN(invoerSeconden) && invoerSeconden >= 0) {
+    timers[geselecteerdeTimer] = invoerSeconden;
+
+    // ✅ Als timer actief is, nieuwe starttijd herberekenen
+    if (intervals[geselecteerdeTimer]) {
+      const verstreken = Math.floor((Date.now() - startTimestamp) / 1000);
+      const nieuweTotaleTijd = timers[geselecteerdeTimer];
+      startTimestamp = Date.now() - (pauzeSeconden - nieuweTotaleTijd) * 1000;
+      pauzeSeconden = nieuweTotaleTijd;
     }
 
+    updateWeergave();
+    updateDatabase();
+  } else {
+    alert("Voer een geldig aantal seconden in (minimaal 0)");
+  }
+}
 
     function updateDatabase() {
       firebase.database().ref("timers").set({
