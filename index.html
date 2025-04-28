@@ -243,6 +243,7 @@ body.display-mode .timer {
 
 </style>
 </head>
+<body>
 <script defer>
   document.addEventListener("DOMContentLoaded", () => {
     const isDisplayMode = new URLSearchParams(window.location.search).get("view") === "display";
@@ -622,8 +623,6 @@ if (!isDisplayMode) {
 }
 });
 </script>
-</head>
-<body>
     <h1>De Slimste Kameraad</h1>
     <div class="timer-container">
     <div class="timer" id="timer-container-0">
