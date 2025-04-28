@@ -164,19 +164,11 @@ function startTimer() {
   const isAnyTimerRunning = intervals.some(interval => interval !== null);
   if (isAnyTimerRunning) return;
 
-  startTimestamp = Date.now();
-
-  // Als er een pauze is geweest, gebruik dat aantal seconden
-  let beginSeconden = pauzeSeconden !== null ? pauzeSeconden : timers[geselecteerdeTimer];
-
   intervals[geselecteerdeTimer] = setInterval(() => {
-    const nu = Date.now();
-    const verstreken = Math.floor((nu - startTimestamp) / 1000);
-    const nieuweTijd = beginSeconden - verstreken;
-
-    if (nieuweTijd >= 0) {
-      timers[geselecteerdeTimer] = nieuweTijd;
+    if (timers[geselecteerdeTimer] > 0) {
+      timers[geselecteerdeTimer]--;
       updateWeergave();
+      updateDatabase();
     } else {
       clearInterval(intervals[geselecteerdeTimer]);
       intervals[geselecteerdeTimer] = null;
@@ -190,9 +182,7 @@ function startTimer() {
       }
       timerEndSound.play().catch(console.log);
     }
-
-    updateDatabase();
-  }, 500);
+  }, 1000); // -> Precies 1 seconde!
 
   timerSound.play().catch(console.log);
   document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "none");
