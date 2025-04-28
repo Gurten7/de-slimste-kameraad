@@ -238,12 +238,10 @@ function resetTimer() {
    function pasTijdAan(aantal) {
   timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
 
-  // ✅ Als timer actief is, nieuwe starttijd berekenen
   if (intervals[geselecteerdeTimer]) {
-    const verstreken = Math.floor((Date.now() - startTimestamp) / 1000);
-    const nieuweTotaleTijd = timers[geselecteerdeTimer];
-    startTimestamp = Date.now() - (pauzeSeconden - nieuweTotaleTijd) * 1000;
-    pauzeSeconden = nieuweTotaleTijd;
+    // Als timer loopt: herbereken pauzeSeconden en startTimestamp!
+    pauzeSeconden = timers[geselecteerdeTimer];
+    startTimestamp = Date.now(); // Nieuwe referentie
   }
 
   updateWeergave();
