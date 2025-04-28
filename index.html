@@ -70,6 +70,8 @@
     let geselecteerdeTimer = 0;
     let zichtbareTimers = [true, true, true, true];
     let finaleGeluidGespeeld = [false, false, false, false];
+    let startTimestamp = null;
+    let pauzeSeconden = null; // 🆕
 
     const timerSound = document.getElementById("timerSound");
     const timerEndSound = document.getElementById("timerEndSound");
@@ -157,20 +159,20 @@
       firebase.database().ref("selectedTimer").set(index);
     }
 
- let startTimestamp = null; // 🆕 Globale variabele bovenaan je script zetten
 
 function startTimer() {
   const isAnyTimerRunning = intervals.some(interval => interval !== null);
   if (isAnyTimerRunning) return;
 
-  startTimestamp = Date.now(); // 🕒 Starttijd opslaan
+  startTimestamp = Date.now();
 
-  let vorigeSeconden = timers[geselecteerdeTimer];
+  // Als er een pauze is geweest, gebruik dat aantal seconden
+  let beginSeconden = pauzeSeconden !== null ? pauzeSeconden : timers[geselecteerdeTimer];
 
   intervals[geselecteerdeTimer] = setInterval(() => {
     const nu = Date.now();
-    const verstreken = Math.floor((nu - startTimestamp) / 1000); // hoeveel seconden verstreken sinds start
-    const nieuweTijd = vorigeSeconden - verstreken;
+    const verstreken = Math.floor((nu - startTimestamp) / 1000);
+    const nieuweTijd = beginSeconden - verstreken;
 
     if (nieuweTijd >= 0) {
       timers[geselecteerdeTimer] = nieuweTijd;
@@ -190,39 +192,48 @@ function startTimer() {
     }
 
     updateDatabase();
-  }, 500); // elke halve seconde controleren voor extra nauwkeurigheid
+  }, 500);
 
   timerSound.play().catch(console.log);
   document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "none");
   finaleGeluidGespeeld[geselecteerdeTimer] = false;
 }
 
-
-   function stopTimer() {
+  function stopTimer() {
   clearInterval(intervals[geselecteerdeTimer]);
   intervals[geselecteerdeTimer] = null;
+
   timerSound.pause();
   timerSound.currentTime = 0;
+
+  // 🆕 Opslaan hoeveel seconden nog over zijn
+  pauzeSeconden = timers[geselecteerdeTimer];
+
   document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "auto");
 }
 
-    function resetTimer() {
-      timers = [60, 60, 60, 60];
-      finaleGeluidGespeeld = [false, false, false, false];
-      updateWeergave();
-      updateDatabase();
-      intervals.forEach((interval, index) => {
-        if (interval) {
-          clearInterval(interval);
-          intervals[index] = null;
-        }
-      });
-      [timerSound, timerEndSound, finaleSound].forEach(audio => {
-        audio.pause();
-        audio.currentTime = 0;
-      });
-      document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "auto");
+function resetTimer() {
+  timers = [60, 60, 60, 60];
+  finaleGeluidGespeeld = [false, false, false, false];
+  pauzeSeconden = null;      // ✅ Pauze wissen
+  startTimestamp = null;     // ✅ Starttijd wissen
+  updateWeergave();
+  updateDatabase();
+  
+  intervals.forEach((interval, index) => {
+    if (interval) {
+      clearInterval(interval);
+      intervals[index] = null;
     }
+  });
+
+  [timerSound, timerEndSound, finaleSound].forEach(audio => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+
+  document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "auto");
+}
 
     function pasTijdAan(aantal) {
       timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
