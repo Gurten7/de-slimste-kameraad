@@ -157,20 +157,29 @@
       firebase.database().ref("selectedTimer").set(index);
     }
 
-  function startTimer() {
-  // Eerst: check of er überhaupt al een timer loopt
-  const isAnyTimerRunning = intervals.some(interval => interval !== null);
-  if (isAnyTimerRunning) return; // ✅ Voorkom dat startTimer() dubbel start
+ let startTimestamp = null; // 🆕 Globale variabele bovenaan je script zetten
 
-  // Start geselecteerde timer
+function startTimer() {
+  const isAnyTimerRunning = intervals.some(interval => interval !== null);
+  if (isAnyTimerRunning) return;
+
+  startTimestamp = Date.now(); // 🕒 Starttijd opslaan
+
+  let vorigeSeconden = timers[geselecteerdeTimer];
+
   intervals[geselecteerdeTimer] = setInterval(() => {
-    if (timers[geselecteerdeTimer] > 0) {
-      timers[geselecteerdeTimer]--;
+    const nu = Date.now();
+    const verstreken = Math.floor((nu - startTimestamp) / 1000); // hoeveel seconden verstreken sinds start
+    const nieuweTijd = vorigeSeconden - verstreken;
+
+    if (nieuweTijd >= 0) {
+      timers[geselecteerdeTimer] = nieuweTijd;
       updateWeergave();
-      updateDatabase();
-    } else if (timers[geselecteerdeTimer] === 0) {
+    } else {
       clearInterval(intervals[geselecteerdeTimer]);
       intervals[geselecteerdeTimer] = null;
+      timers[geselecteerdeTimer] = 0;
+      updateWeergave();
       timerSound.pause();
       timerSound.currentTime = 0;
       if (!finaleGeluidGespeeld[geselecteerdeTimer]) {
@@ -179,12 +188,15 @@
       }
       timerEndSound.play().catch(console.log);
     }
-  }, 1000);
+
+    updateDatabase();
+  }, 500); // elke halve seconde controleren voor extra nauwkeurigheid
 
   timerSound.play().catch(console.log);
   document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "none");
   finaleGeluidGespeeld[geselecteerdeTimer] = false;
 }
+
 
    function stopTimer() {
   clearInterval(intervals[geselecteerdeTimer]);
