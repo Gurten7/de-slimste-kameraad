@@ -381,32 +381,73 @@ function checkAndInitializeDatabase() {
 checkAndInitializeDatabase();
 
 if (!isDisplayMode) {
+  // Timer selecteren door erop te klikken
   document.querySelectorAll(".timer").forEach((el, index) => {
     el.addEventListener("click", () => selecteerTimer(index));
   });
-  document.getElementById("timerSelect").addEventListener("change", (e) => selecteerTimer(parseInt(e.target.value)));
+
+  // Timer selecteren via dropdown
+  document.getElementById("timerSelect").addEventListener("change", (e) => {
+    const geselecteerd = parseInt(e.target.value);
+    if (!isNaN(geselecteerd)) {
+      selecteerTimer(geselecteerd);
+    }
+  });
+
+  // Start-knop
   document.getElementById("startBtn").addEventListener("click", () => {
+    if (intervals[geselecteerdeTimer]) return; // Timer loopt al
+
+    pauzeSeconden = timers[geselecteerdeTimer]; // Opslaan huidige tijd
+    startTimestamp = Date.now();                // Starttijd zetten
     timerStatusRef.set("start");
+
     document.getElementById("timerSelect").setAttribute("disabled", true);
   });
-document.getElementById("stopBtn").addEventListener("click", () => {
-  timerStatusRef.set("stop");
-  stopSoundRef.set(true); // ✅ Nieuw toegevoegd voor stopgeluid
-  document.getElementById("timerSelect").removeAttribute("disabled");
-});
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    timerStatusRef.set("reset");
+
+  // Stop-knop
+  document.getElementById("stopBtn").addEventListener("click", () => {
+    if (!intervals[geselecteerdeTimer]) return; // Timer moet lopen
+
+    const verstreken = Math.floor((Date.now() - startTimestamp) / 1000);
+    pauzeSeconden = Math.max(0, pauzeSeconden - verstreken); // Pauze-seconden bijwerken
+
+    timerStatusRef.set("stop");
+    stopSoundRef.set(true);
+
     document.getElementById("timerSelect").removeAttribute("disabled");
   });
-  document.getElementById("toggleBtn").addEventListener("click", toggleTimerZichtbaarheid);
-  document.getElementById("setTimeBtn").addEventListener("click", stelAangepasteTijdIn);
-  document.querySelectorAll(".adjust-time").forEach(btn => {
-    btn.addEventListener("click", () => pasTijdAan(parseInt(btn.dataset.amount)));
+
+  // Reset-knop
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    pauzeSeconden = null;
+    startTimestamp = null;
+    timerStatusRef.set("reset");
+
+    document.getElementById("timerSelect").removeAttribute("disabled");
   });
+
+  // Zichtbaarheid wisselen
+  document.getElementById("toggleBtn").addEventListener("click", toggleTimerZichtbaarheid);
+
+  // Handmatig tijd instellen
+  document.getElementById("setTimeBtn").addEventListener("click", stelAangepasteTijdIn);
+
+  // Tijd aanpassen (+10, +20, -20 sec etc)
+  document.querySelectorAll(".adjust-time").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const amount = parseInt(btn.dataset.amount);
+      if (!isNaN(amount)) {
+        pasTijdAan(amount);
+      }
+    });
+  });
+
 } else {
+  // In display mode mag dropdown niet klikbaar zijn
   document.getElementById("timerSelect").setAttribute("disabled", true);
 }
-});
+
   
 </script>
     <style>
