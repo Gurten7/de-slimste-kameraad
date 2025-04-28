@@ -270,17 +270,20 @@ function resetTimer() {
       });
     }
 
-    function stelAangepasteTijdIn() {
+   function stelAangepasteTijdIn() {
   const invoerSeconden = parseInt(document.getElementById("timeInput").value);
   if (!isNaN(invoerSeconden) && invoerSeconden >= 0) {
-    timers[geselecteerdeTimer] = invoerSeconden;
-
-    // ✅ Als timer actief is, nieuwe starttijd herberekenen
+    // ✅ Als timer actief is
     if (intervals[geselecteerdeTimer]) {
-      const verstreken = Math.floor((Date.now() - startTimestamp) / 1000);
-      const nieuweTotaleTijd = timers[geselecteerdeTimer];
-      startTimestamp = Date.now() - (pauzeSeconden - nieuweTotaleTijd) * 1000;
-      pauzeSeconden = nieuweTotaleTijd;
+      timers[geselecteerdeTimer] = invoerSeconden;
+
+      // StartTimestamp herberekenen zodat het tellen vloeiend doorgaat
+      startTimestamp = Date.now();
+      pauzeSeconden = timers[geselecteerdeTimer];
+    } else {
+      // ✅ Als timer NIET actief is
+      timers[geselecteerdeTimer] = invoerSeconden;
+      pauzeSeconden = timers[geselecteerdeTimer];
     }
 
     updateWeergave();
