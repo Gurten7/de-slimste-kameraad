@@ -225,28 +225,12 @@ function resetTimer() {
   document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "auto");
 }
 
-   function pasTijdAan(aantal) {
-  // ✅ Als timer actief is
-  if (intervals[geselecteerdeTimer]) {
-    const verstreken = Math.floor((Date.now() - startTimestamp) / 1000);
-    const nieuweTotaleTijd = timers[geselecteerdeTimer] + aantal;
-
-    // Tijd kan nooit negatief worden
-    timers[geselecteerdeTimer] = Math.max(0, nieuweTotaleTijd);
-
-    // StartTimestamp herberekenen zodat het tellen vloeiend doorgaat
-    startTimestamp = Date.now() - (pauzeSeconden - timers[geselecteerdeTimer]) * 1000;
-    pauzeSeconden = timers[geselecteerdeTimer];
-  } else {
-    // ✅ Als timer NIET actief is
-    timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
-    pauzeSeconden = timers[geselecteerdeTimer]; // Ook pauzeSeconden updaten
-  }
+  function pasTijdAan(aantal) {
+  timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
 
   updateWeergave();
   updateDatabase();
 }
-
 
     function toggleTimerZichtbaarheid() {
       zichtbareTimers[geselecteerdeTimer] = !zichtbareTimers[geselecteerdeTimer];
