@@ -43,6 +43,205 @@
         .catch(err => console.error("❌ Service worker fout:", err));
     }
   </script>
+  <style>
+   /* 🌍 Basisstijl */
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #650409;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🏷️ Titel alleen voor eventuele debugging */
+h1 {
+  display: none;
+}
+
+/* 🔲 Timer-container voor alle modi */
+.timer-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 20px;
+}
+
+/* ⏱️ Timer-blokken: standaardstijl */
+.timer {
+  width: 360px;
+  height: 300px;
+  border: 6px solid white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 90px;
+  font-weight: bold;
+  color: white;
+  background-color: #650409;
+  border-radius: 20px;
+  text-align: center;
+}
+
+/* ✍️ Teamnamen */
+.team-name {
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.team-input {
+  font-size: 30px;
+  font-weight: bold;
+  width: 80%;
+  text-align: center;
+  border: none;
+  outline: none;
+}
+
+/* 🧰 Besturingsknoppen (alleen in edit-mode) */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+button {
+  background-color: #F8AF00;
+  color: black;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  width: auto;
+  max-width: 120px;
+}
+
+.selected {
+  border: 8px solid #F8AF00;
+}
+
+/* 🖥️ Display-modus: fullscreen en responsief */
+body.display-mode {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+body.display-mode .timer-container {
+  flex: 1;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  padding: 0 20px;
+}
+
+body.display-mode .timer {
+  flex: 1 1 0;
+  max-width: 25%;
+  height: 80vh;
+  font-size: clamp(60px, 8vw, 140px);
+  box-sizing: border-box;
+}
+
+/* 📱 Mobiele optimalisatie (alleen voor display-mode) */
+@media (max-width: 768px) {
+  body.display-mode .timer-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    overflow-y: auto;
+    padding: 10px;
+  }
+
+  body.display-mode .timer {
+    max-width: 100%;
+    width: 100%;
+    height: 25vh;
+    font-size: clamp(40px, 12vw, 90px);
+  }
+}
+
+/* 📱 Mobiele aanpassing voor edit-mode (timers naast elkaar, geen scroll) */
+@media (max-width: 768px) {
+  body:not(.display-mode) .timer-container {
+    flex-direction: row;
+    flex-wrap: wrap;               /* Laat timers op meerdere regels gaan indien nodig */
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  body:not(.display-mode) .timer {
+    flex: 1 1 calc(50% - 20px);    /* Twee timers per regel */
+    max-width: 180px;
+    height: 160px;
+    font-size: clamp(30px, 6vw, 60px);
+  }
+
+  body:not(.display-mode) .team-name {
+    font-size: 16px;
+  }
+
+  body:not(.display-mode) .controls {
+    width: 95%;
+    margin-top: 20px;
+  }
+
+  body:not(.display-mode) button {
+    font-size: 13px;
+  }
+}
+
+  .timer-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+  }
+
+  .timer-value {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: inherit;
+      font-weight: bold;
+  }
+      
+      #teamnaam-formulier input.team-input {
+  width: 140px;
+  font-size: 16px;
+  padding: 8px;
+  text-align: center;
+  margin: 5px;
+}
+
+#updateTeamNamesBtn {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+</style>
 </head>
 <script defer>
   document.addEventListener("DOMContentLoaded", () => {
@@ -423,205 +622,6 @@ if (!isDisplayMode) {
 }
 });
 </script>
-    <style>
-   /* 🌍 Basisstijl */
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #650409;
-  margin: 0;
-  padding: 0;
-}
-
-/* 🏷️ Titel alleen voor eventuele debugging */
-h1 {
-  display: none;
-}
-
-/* 🔲 Timer-container voor alle modi */
-.timer-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding: 20px;
-}
-
-/* ⏱️ Timer-blokken: standaardstijl */
-.timer {
-  width: 360px;
-  height: 300px;
-  border: 6px solid white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 90px;
-  font-weight: bold;
-  color: white;
-  background-color: #650409;
-  border-radius: 20px;
-  text-align: center;
-}
-
-/* ✍️ Teamnamen */
-.team-name {
-  font-size: 30px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-.team-input {
-  font-size: 30px;
-  font-weight: bold;
-  width: 80%;
-  text-align: center;
-  border: none;
-  outline: none;
-}
-
-/* 🧰 Besturingsknoppen (alleen in edit-mode) */
-.controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 40px;
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-button {
-  background-color: #F8AF00;
-  color: black;
-  border: none;
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 5px;
-  width: auto;
-  max-width: 120px;
-}
-
-.selected {
-  border: 8px solid #F8AF00;
-}
-
-/* 🖥️ Display-modus: fullscreen en responsief */
-body.display-mode {
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-body.display-mode .timer-container {
-  flex: 1;
-  justify-content: space-around;
-  align-items: center;
-  height: 100%;
-  padding: 0 20px;
-}
-
-body.display-mode .timer {
-  flex: 1 1 0;
-  max-width: 25%;
-  height: 80vh;
-  font-size: clamp(60px, 8vw, 140px);
-  box-sizing: border-box;
-}
-
-/* 📱 Mobiele optimalisatie (alleen voor display-mode) */
-@media (max-width: 768px) {
-  body.display-mode .timer-container {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    overflow-y: auto;
-    padding: 10px;
-  }
-
-  body.display-mode .timer {
-    max-width: 100%;
-    width: 100%;
-    height: 25vh;
-    font-size: clamp(40px, 12vw, 90px);
-  }
-}
-
-/* 📱 Mobiele aanpassing voor edit-mode (timers naast elkaar, geen scroll) */
-@media (max-width: 768px) {
-  body:not(.display-mode) .timer-container {
-    flex-direction: row;
-    flex-wrap: wrap;               /* Laat timers op meerdere regels gaan indien nodig */
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  body:not(.display-mode) .timer {
-    flex: 1 1 calc(50% - 20px);    /* Twee timers per regel */
-    max-width: 180px;
-    height: 160px;
-    font-size: clamp(30px, 6vw, 60px);
-  }
-
-  body:not(.display-mode) .team-name {
-    font-size: 16px;
-  }
-
-  body:not(.display-mode) .controls {
-    width: 95%;
-    margin-top: 20px;
-  }
-
-  body:not(.display-mode) button {
-    font-size: 13px;
-  }
-}
-
-  .timer-inner {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-      width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-  }
-
-  .timer-value {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: inherit;
-      font-weight: bold;
-  }
-      
-      #teamnaam-formulier input.team-input {
-  width: 140px;
-  font-size: 16px;
-  padding: 8px;
-  text-align: center;
-  margin: 5px;
-}
-
-#updateTeamNamesBtn {
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-</style>
 </head>
 <body>
     <h1>De Slimste Kameraad</h1>
