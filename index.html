@@ -236,17 +236,27 @@ function resetTimer() {
 }
 
    function pasTijdAan(aantal) {
-  timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
-
+  // ✅ Als timer actief is
   if (intervals[geselecteerdeTimer]) {
-    // Als timer loopt: herbereken pauzeSeconden en startTimestamp!
+    const verstreken = Math.floor((Date.now() - startTimestamp) / 1000);
+    const nieuweTotaleTijd = timers[geselecteerdeTimer] + aantal;
+
+    // Tijd kan nooit negatief worden
+    timers[geselecteerdeTimer] = Math.max(0, nieuweTotaleTijd);
+
+    // StartTimestamp herberekenen zodat het tellen vloeiend doorgaat
+    startTimestamp = Date.now() - (pauzeSeconden - timers[geselecteerdeTimer]) * 1000;
     pauzeSeconden = timers[geselecteerdeTimer];
-    startTimestamp = Date.now(); // Nieuwe referentie
+  } else {
+    // ✅ Als timer NIET actief is
+    timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
+    pauzeSeconden = timers[geselecteerdeTimer]; // Ook pauzeSeconden updaten
   }
 
   updateWeergave();
   updateDatabase();
 }
+
 
     function toggleTimerZichtbaarheid() {
       zichtbareTimers[geselecteerdeTimer] = !zichtbareTimers[geselecteerdeTimer];
