@@ -181,14 +181,13 @@
       finaleGeluidGespeeld[geselecteerdeTimer] = false;
     }
 
-    function stopTimer() {
-      clearInterval(intervals[geselecteerdeTimer]);
-      intervals[geselecteerdeTimer] = null;
-      timerSound.pause();
-      timerSound.currentTime = 0;
-      setTimeout(() => timerEndSound.play().catch(console.log), 100);
-      document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "auto");
-    }
+   function stopTimer() {
+  clearInterval(intervals[geselecteerdeTimer]);
+  intervals[geselecteerdeTimer] = null;
+  timerSound.pause();
+  timerSound.currentTime = 0;
+  document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "auto");
+}
 
     function resetTimer() {
       timers = [60, 60, 60, 60];
@@ -254,26 +253,32 @@
     }
 
     function syncTimers() {
-      firebase.database().ref("timers").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          timers = [data.team1, data.team2, data.team3, data.team4];
-          updateWeergave();
-        }
-      });
-      firebase.database().ref("teamNames").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          teamNamen = [data.team1, data.team2, data.team3, data.team4];
-          updateWeergave();
-          selecteerTimer(geselecteerdeTimer);
-        }
-      });
-      firebase.database().ref("selectedTimer").on("value", (snapshot) => {
-        const selectedTimer = snapshot.val();
-        if (selectedTimer !== null) selecteerTimer(selectedTimer);
-      });
+  firebase.database().ref("timers").on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      // Alleen als GEEN enkele timer actief is
+      const isTimerRunning = intervals.some(interval => interval !== null);
+      if (!isTimerRunning) {
+        timers = [data.team1, data.team2, data.team3, data.team4];
+        updateWeergave();
+      }
     }
+  });
+
+  firebase.database().ref("teamNames").on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      teamNamen = [data.team1, data.team2, data.team3, data.team4];
+      updateWeergave();
+      selecteerTimer(geselecteerdeTimer);
+    }
+  });
+
+  firebase.database().ref("selectedTimer").on("value", (snapshot) => {
+    const selectedTimer = snapshot.val();
+    if (selectedTimer !== null) selecteerTimer(selectedTimer);
+  });
+}
 
     function syncVisibility() {
       firebase.database().ref("timerVisibility").on("value", (snapshot) => {
@@ -328,10 +333,11 @@ if (!isDisplayMode) {
     timerStatusRef.set("start");
     document.getElementById("timerSelect").setAttribute("disabled", true);
   });
-  document.getElementById("stopBtn").addEventListener("click", () => {
-    timerStatusRef.set("stop");
-    document.getElementById("timerSelect").removeAttribute("disabled");
-  });
+document.getElementById("stopBtn").addEventListener("click", () => {
+  timerStatusRef.set("stop");
+  stopSoundRef.set(true); // ✅ Nieuw toegevoegd voor stopgeluid
+  document.getElementById("timerSelect").removeAttribute("disabled");
+});
   document.getElementById("resetBtn").addEventListener("click", () => {
     timerStatusRef.set("reset");
     document.getElementById("timerSelect").removeAttribute("disabled");
