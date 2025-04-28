@@ -235,11 +235,20 @@ function resetTimer() {
   document.querySelectorAll(".timer").forEach(el => el.style.pointerEvents = "auto");
 }
 
-    function pasTijdAan(aantal) {
-      timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
-      updateWeergave();
-      updateDatabase();
-    }
+   function pasTijdAan(aantal) {
+  timers[geselecteerdeTimer] = Math.max(0, timers[geselecteerdeTimer] + aantal);
+
+  // ✅ Als timer actief is, nieuwe starttijd berekenen
+  if (intervals[geselecteerdeTimer]) {
+    const verstreken = Math.floor((Date.now() - startTimestamp) / 1000);
+    const nieuweTotaleTijd = timers[geselecteerdeTimer];
+    startTimestamp = Date.now() - (pauzeSeconden - nieuweTotaleTijd) * 1000;
+    pauzeSeconden = nieuweTotaleTijd;
+  }
+
+  updateWeergave();
+  updateDatabase();
+}
 
     function toggleTimerZichtbaarheid() {
       zichtbareTimers[geselecteerdeTimer] = !zichtbareTimers[geselecteerdeTimer];
